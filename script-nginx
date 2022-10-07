@@ -1,0 +1,53 @@
+#!/bin/bash
+
+#TASK 1. Verifying package installation
+pkg="nginx"
+I=$(dpkg-query -s $pkg | grep "install ok installed")
+
+if [ "$I" != "Status: install ok installed" ]
+then
+	echo "Package $pkg not found. Installing package $pkg now."
+	sudo apt update
+ 	sudo apt --yes install $pkg
+	sudo systemctl enable $pkg
+else
+ 	echo "Package $pkg is already installed."
+fi
+
+#TASK 2. Changing the start page with current data
+sudo touch /var/www/html/index.html
+sudo chmod 0777 /var/www
+sudo chmod 0777 /var/www/html
+output=/var/www/html/index.html
+sudo chmod 777 /var/www/html/index.html
+./script-index > $output
+#cat $output
+
+#TASK 3. Creation of 5 users
+declare names=(User1 User2 User3 User4 User5)
+
+for name in ${names[*]}; do
+	sudo useradd -m $name
+done
+
+cat /etc/passwd | grep User*
+
+#TASK 4. Sending a notification to Slack
+IP=`hostname -I`
+cur_date=`date +"%D %H:%M"`
+CHANNEL="test-notifications"
+TOKEN="xoxp-4174632198562-4171672301109-4160129049831-92035b450837c4137f257f8eba0bcd94"
+
+curl -d "text=My IP: $IP, creation date/time: $cur_date" -d channel=${CHANNEL} -H "Authorization: Bearer ${TOKEN}" https://slack.com/api/chat.postMessage > result.txt
+
+#TASK 5. Checking the functionality of the package nginx
+process=`ps aux | grep "master process /usr/sbin/nginx" | grep -v grep | wc -l`
+if [ "$process" != 0 ]; then 
+	echo "Success: Process of package $pkg is active!"
+else echo "Failure: Process of package $pkg is NOT active!"
+fi
+
+
+
+
+

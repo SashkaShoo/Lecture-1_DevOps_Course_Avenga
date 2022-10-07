@@ -1,0 +1,22 @@
+#!/bin/bash
+
+IP=`hostname -I`
+cur_date=`date +"%D %H:%M"`
+
+cat << _EOF_
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>This is a new page!</title>
+</head>
+<body>
+<h1>This is a new page!</h1>
+<p>Page #1 was created using the nginx package.</p>
+<p>Thank you!</p>
+<P>My IP: $IP </P>
+<p>Creation date/time: $cur_date</p>
+</body>
+</html>
+
+_EOF_
